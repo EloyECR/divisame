@@ -1,9 +1,12 @@
-@extends('header')
+@extends('divisame.header')
 @section('table')
     <h2>VENEZUELA</h2>
     <h4>VE Bs. 1 = AR ${{$VE2AR}}</h4>
     <table class="table table-bordered table-dark">
         <thead class="text-center">
+            <tr>
+                <th colspan="3" class="text-center">{{date("h:i:s d/m/Y")}}</th>
+            </tr>
             <tr>
                 <th class="text-center">Entidad</th>
                 <th class="text-center">Venta</th>

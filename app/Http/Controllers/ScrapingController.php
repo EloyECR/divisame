@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Goutte\Client;
 
-
-
 class ScrapingController extends Controller
 {
     public function DolarInfo($tipo = 1){
         $client = new Client();
         $entidad = array(); $valor = array();
         $crawler = $client->request('GET', 'https://www.infodolar.com/cotizacion-dolar-blue.aspx');
-        $clase = "'nombre'";
+        $clase = "'colNombre'";
         $nombreEntidades = $crawler->filter("[class=$clase]")->each(function($nombres){
             $this->entidad[] = $nombres->filter('')->text();
         });
@@ -45,7 +43,6 @@ class ScrapingController extends Controller
                 $auxCompra++;
             }
         }
-
         $promedioVenta = $promedioVenta / $auxVenta;
         $promedioCompra = $promedioCompra / $auxCompra;
         if($tipo==1){
@@ -120,26 +117,44 @@ class ScrapingController extends Controller
 
     public function MonitorDolarVE($tipo = 1){
         $client = new Client();
-
         $datos = array();
         $crawler = $client->request('GET', 'https://monitordolarvenezuela.com/');
         $claseBox = "'box-prices row'";
+        $a = array();
+        $precios = array();
+        $crawler->filter("style")->each(function($data){
+            $this->a[] = $data->html();
+        });
+        $aux = explode("content: '",$this->a[7]);
+        foreach ($aux as $item) {
+            $aux2[] = explode("';",$item);
+        }
+        foreach ($aux2 as $item) {
+            $this->precios[]=$item[0];
+        }
         $nombreEntidades = $crawler->filter("[class=$claseBox]")->each(function($data){
             $claseEntidad = "'col-12 col-lg-5'";
             $claseCambio = "'col-6 col-lg-4'";
             $this->datos[] = [
                 "entidad" => $data->filter("[class=$claseEntidad]")->text(),
-                "venta"  => $data->filter("[class=$claseCambio]")->text(),
+                // "venta"  => $data->filter("[class=$claseCambio]")->text(),
             ];
         });
         $promedio=0;
         $aux=0;
+        $j=2;
+        for($i=0;$i<sizeof($this->datos);$i++){
+            $this->datos[$i]["venta"] = $this->precios[$j];
+            $j++;
+        }
+
         for($i=0;$i<sizeof($this->datos);$i++){
             if($this->datos[$i]["venta"]>0){
                 $promedio += $this->tofloat($this->datos[$i]["venta"]);
                 $aux++;
             }
         }
+
         $promedio = $promedio / $aux;
         if($tipo==1){
             $VE2AR = $this->VE2AR($promedio);

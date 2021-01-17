@@ -10,28 +10,35 @@ class ScrapingController extends Controller
         $client = new Client();
         $entidad = array(); $valor = array();
         $crawler = $client->request('GET', 'https://www.infodolar.com/cotizacion-dolar-blue.aspx');
-        $clase = "'colNombre'";
-        $nombreEntidades = $crawler->filter("[class=$clase]")->each(function($nombres){
-            $this->entidad[] = $nombres->filter('')->text();
+        $id = "'cotizacionesBlue'";
+        $nombreEntidades = $crawler->filter("[id=$id]")->each(function($nombres){
+            $class = "'colNombre'";
+            $entidad = $nombres->filter("[class=$class]")->each(function($nombres){
+                $this->entidad[] = $nombres->text();
+            });
         });
-
-        $clase = "'colCompraVenta'";
-        $valores = $crawler->filter("[class=$clase]")->each(function($tasa){
-            $this->valor[] = substr($tasa->text(),2,6);
+        // dd($this->entidad);
+        $valores = $crawler->filter("[id=$id]")->each(function($tasa){
+            $class = "'colCompraVenta'";
+            $compraventa = $tasa->filter("[class=$class]")->each(function($montos){
+                $this->valor[] =  substr($montos->text(),2,6);
+            });
         });
-
-        $pos=0;
-        for($i=0;$i<sizeof($this->valor);$i++){
+        for ($i=0; $i<count($this->valor); $i++) { 
             if($i % 2 == 0){
-                $pos++;
-                $datos[] = [
-                    "entidad"   => $this->entidad[$pos-1],
-                    "compra"    => $this->valor[$i],
-                    "venta"     => $this->valor[$i+1],
-                ];
+                $this->compra[]=$this->valor[$i];
+            }else{
+                $this->venta[]=$this->valor[$i];
             }
         }
-
+        $pos=0;
+        for($i=0;$i<sizeof($this->entidad);$i++){
+            $datos[] = [
+                "entidad"   => $this->entidad[$i],
+                "compra"    => $this->compra[$i],
+                "venta"     => $this->venta[$i],
+            ];
+        }
         $promedioVenta=0;$auxVenta=0;$promedioCompra=0;$auxCompra=0;
         for($i=0;$i<sizeof($datos);$i++){
             if($datos[$i]["venta"]>0){
@@ -76,13 +83,11 @@ class ScrapingController extends Controller
         ];
         $crawler = $client->request('GET', 'https://www.dolarhoy.com/cotizacion-dolar-oficial');
         $divCompra = "'col-md-6 compra'";
-        // $valor = $crawler->filter("[class=$spanRight]")->first();
         $boxCompra = $crawler->filter("[class=$divCompra]")->each(function($textoCompra){
             $span = $textoCompra->filter("span")->text();
             $this->valorCompra = substr($span,-6);
         });
         $divVenta = "'col-md-6 venta'";
-        // $valor = $crawler->filter("[class=$spanRight]")->first();
         $boxVenta = $crawler->filter("[class=$divVenta]")->each(function($textoVenta){
             $span = $textoVenta->filter("span")->text();
             $this->valorVenta = substr($span,-6);

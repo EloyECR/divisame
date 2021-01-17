@@ -16,18 +16,12 @@
             </tr>
         </thead>
         <tbody>
-            @php
-                $i=0;
-            @endphp
             @foreach ($datos as $item)
-                @if ($i>0)
                     <tr>
                         <td class=""><strong>{{$item["entidad"]}}</strong></td>
                         <td class="text-right"><strong>${{$item["compra"] == false ? 0 : $item["compra"]}}</strong></td>
                         <td class="text-right"><strong>${{$item["venta"]}}</strong></td>
                     </tr>
-                @endif
-                @php $i++; @endphp
             @endforeach
         </tbody>
     </table>

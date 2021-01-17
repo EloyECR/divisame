@@ -13,10 +13,10 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="row">
-        <div class="col-md-4 offset-md-1">
+    <div class="row mt-5">
+        <div class="col-xs-12 col-md-6 offset-md-3">
             <form action="POST" class="form-control">
-                <h3 class="">Origen</h3><hr>
+                <h3 class="">ORIGEN</h3><hr>
                 <div class="form-group">
                     <label for="pais_origen">País Origen: </label>
                     <select name="pais_origen" id="pais_origen" class="form-control" onchange="calcular();">
@@ -68,9 +68,11 @@
                 <input type="hidden" value="{{$pesoArgentino}}" id="pesoArgentino">
             </form>
         </div>
-        <div class="col-md-4 offset-md-2">
+    </div>
+    <div class="row mt-5">
+        <div class="col-xs-12 col-md-6 offset-md-3">
             <form action="POST" class="form-control">
-                <h3 class="">Destino</h3><hr>
+                <h3 class="">DESTINO</h3><hr>
                 <div class="form-group">
                     <label for="pais_origen">Banco: </label>
                     <select name="pais_origen" id="pais_origen" class="form-control">
@@ -156,7 +158,6 @@
             monto2recibir.value = Intl.NumberFormat("de-DE").format(numero);
             
         }
-        
     </script>
 </body>
 </html>
